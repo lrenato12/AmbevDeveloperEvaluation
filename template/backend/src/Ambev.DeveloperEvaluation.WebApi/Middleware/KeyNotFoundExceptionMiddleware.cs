@@ -1,15 +1,14 @@
 ﻿using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.WebApi.Common;
-using FluentValidation;
 using System.Text.Json;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Middleware;
 
-public class ValidationExceptionMiddleware
+public class KeyNotFoundExceptionMiddleware
 {
     private readonly RequestDelegate _next;
 
-    public ValidationExceptionMiddleware(RequestDelegate next)
+    public KeyNotFoundExceptionMiddleware(RequestDelegate next)
     {
         _next = next;
     }
@@ -20,23 +19,29 @@ public class ValidationExceptionMiddleware
         {
             await _next(context);
         }
-        catch (ValidationException ex)
+        catch (KeyNotFoundException ex)
         {
-            await HandleValidationExceptionAsync(context, ex);
+            await HandleKeyNotFoundExceptionAsync(context, ex);
         }
     }
 
-    private static Task HandleValidationExceptionAsync(HttpContext context, ValidationException exception)
+    private static Task HandleKeyNotFoundExceptionAsync(HttpContext context, KeyNotFoundException exception)
     {
         context.Response.ContentType = "application/json";
-        context.Response.StatusCode = StatusCodes.Status400BadRequest;
+        context.Response.StatusCode = StatusCodes.Status404NotFound;
 
         var response = new ApiResponse
         {
             Success = false,
-            Message = "Validation Failed",
-            Errors = exception.Errors
-                .Select(error => (ValidationErrorDetail)error)
+            Message = exception.Message,
+            Errors = new List<ValidationErrorDetail>
+            {
+                new ValidationErrorDetail()
+                {
+                    Error = exception.Message,
+                    Detail = exception.StackTrace ?? string.Empty
+                }
+            }
         };
 
         var jsonOptions = new JsonSerializerOptions
