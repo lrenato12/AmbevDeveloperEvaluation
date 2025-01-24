@@ -7,9 +7,7 @@ using Xunit;
 namespace Ambev.DeveloperEvaluation.Unit.Domain.Validation;
 
 /// <summary>
-/// Contains unit tests for the UserValidator class.
-/// Tests cover validation of all user properties including username, email,
-/// password, phone, status, and role requirements.
+/// Contains unit tests for the UserValidatorTests class.
 /// </summary>
 public class UserValidatorTests
 {
