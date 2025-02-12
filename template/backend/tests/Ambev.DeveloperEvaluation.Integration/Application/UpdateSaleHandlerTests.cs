@@ -41,7 +41,7 @@ public class UpdateSaleHandlerTests
         var command = CreateSaleHandlerTestData.CreateValidUpdateCommand();
         var sale = SaleManagerServiceTestData.GenerateSale();
         _saleService.UpdateSale(Arg.Any<Sale>()).Returns(sale);
-        _saleRepository.GetByIdAsync(Arg.Any<Guid>()).Returns(sale);
+        _saleRepository.GetWithItemsByIdAsync(Arg.Any<Guid>()).Returns(sale);
 
         var result = new UpdateSaleResult
         {
