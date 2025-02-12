@@ -1,6 +1,31 @@
 version: '3.8'
 
 services:
+  postgres_gestao:
+    image: postgres:latest
+    container_name: postgres_gestao
+    restart: always
+    environment:
+      POSTGRES_DB: ambev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 19101969
+    ports:
+      - "5432:5432"
+    networks:
+      - backend-network
+
+  
+  api:
+    build: .
+    container_name: ambev-container
+    depends_on:
+      - postgres-container
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=postgres-container;Database=ambev;User Id=postgres;Password=19101969;
+    networks:
+      - backend-network
+  
+
   ambev.developerevaluation.webapi:
     container_name: ambev_developer_evaluation_webapi
     image: ${DOCKER_REGISTRY-}ambevdeveloperevaluationwebapi
@@ -19,13 +44,16 @@ services:
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
 
   ambev.developerevaluation.database:
-    container_name: ambev_developer_evaluation_database
-    image: postgres:13
+    # container_name: ambev_developer_evaluation_database
+    container_name: ambev-container
+    # image: postgres:13
+    image: ambev-container
 
     environment:
-      POSTGRES_DB: developer_evaluation
-      POSTGRES_USER: developer
-      POSTGRES_PASSWORD: ev@luAt10n
+      # POSTGRES_DB: developer_evaluation
+      POSTGRES_DB: ambeb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 19101969
     ports:
       - "5432"
     restart: unless-stopped
@@ -35,16 +63,16 @@ services:
     image: mongo:8.0    
     environment:
         MONGO_INITDB_ROOT_USERNAME: developer
-        MONGO_INITDB_ROOT_PASSWORD: ev@luAt10n
+        MONGO_INITDB_ROOT_PASSWORD: 19101969
     ports:
       - "27017"
 
   ambev.developerevaluation.cache:
     container_name: ambev_developer_evaluation_cache 
     image: redis:7.4.1-alpine     
-    command: redis-server --requirepass ev@luAt10n
+    command: redis-server --requirepass 19101969
     environment:
        MONGO_INITDB_ROOT_USERNAME: developer
-       MONGO_INITDB_ROOT_PASSWORD: ev@luAt10n
+       MONGO_INITDB_ROOT_PASSWORD: 19101969
     ports:
        - "6379"
