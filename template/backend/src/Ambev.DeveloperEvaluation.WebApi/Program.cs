@@ -46,6 +46,9 @@ public class Program
                 )
             );
 
+            // Inicializar o banco de dados
+            builder.Services.InitializeDatabase();
+
             builder.Services.AddJwtAuthentication(builder.Configuration);
 
             // IUserService
